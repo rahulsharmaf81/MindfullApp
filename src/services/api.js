@@ -35,9 +35,9 @@ const customAxios = {
     //   console.log("Ressss",response);
       return response;
     } catch (error) {
-    //   if (!error.response) {
-    //     throw new Error('Internet connection error');
-    //   }
+      if (!error.response) {
+        throw new Error('Internet connection error');
+      }
     console.log("post catch",error.message);
       throw error;
     }
@@ -55,9 +55,9 @@ const customAxios = {
     //   console.log("Ressss",response);
       return response;
     } catch (error) {
-    //   if (!error.response) {
-    //     throw new Error('Internet connection error');
-    //   }
+      if (!error.response) {
+        throw new Error('Internet connection error');
+      }
     console.log("post catch",error.message);
       throw error;
     }

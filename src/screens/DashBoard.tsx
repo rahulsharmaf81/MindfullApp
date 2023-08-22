@@ -1,5 +1,7 @@
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Image ,FlatList,Dimensions, TextInput} from 'react-native';
 import React,{useEffect, useState} from 'react'
+import { Snackbar } from 'react-native-paper';
+import NetInfo from '@react-native-community/netinfo';
 import QuokkaImage from '../assets/images/quokkaImg.png'
 import NoData from '../assets/images/no-data.png'
 import filterImg from '../assets/images/filter.png'
@@ -16,6 +18,8 @@ export default function DashBoard({navigation}) {
     const [searchText, setSearchText] = useState('');
     const [suggestedNames, setSuggestedNames] = useState([]);
     const [selectedFilter, setSelectedFilter] = useState('');
+    const [isConnected, setIsConnected] = useState(true);
+    const [visible, setVisible] = useState(false);
     const [getResponse,setResponse] = useState([]);
     const [getData,setData] = useState([]);
     const [formData, setFormData] = useState({
@@ -23,11 +27,7 @@ export default function DashBoard({navigation}) {
       mobile: '',
       email: '',
     });
-    const arr = [
-      { userName: 'rahul', email: 'rahul@gmail.com', phone: '9781588567' },
-      { userName: 'ravi', email: 'ravi@gmail.com', phone: '345456' },
-      { userName: 'raju', email: 'raju@gmail.com', phone: '34343434334' },
-    ];
+   
       useEffect(() =>{
         getAllUser()
       },[])
@@ -39,6 +39,7 @@ export default function DashBoard({navigation}) {
           // console.log(response); 
           setResponse(response)
           setData(response)
+          
         } catch (error) {
           console.error(error); // Handle any errors
         }
@@ -46,6 +47,28 @@ export default function DashBoard({navigation}) {
 
       }
 
+      useEffect(() => {
+        // Check network connectivity when the component mounts
+        NetInfo.fetch().then((state) => {
+          console.log("network ",state.isConnected);
+          
+          setIsConnected(state.isConnected);
+        });
+    
+        // Subscribe to network connectivity changes
+        const unsubscribe = NetInfo.addEventListener((state) => {
+          setIsConnected(state.isConnected);
+        });
+    
+        return () => {
+          // Clean up the subscription when the component unmounts
+          unsubscribe();
+        };
+      }, []);
+    
+      const showMessage = () => {
+        setVisible(true);
+      };
     const toggleModal = () => {
       setModalVisible(!isModalVisible);
     };
@@ -137,6 +160,17 @@ export default function DashBoard({navigation}) {
       );
   return (
     <View style={styles.container}>
+       <Snackbar
+        visible={!isConnected }
+        onDismiss={() => {
+          console.log("snack pressed");
+          setIsConnected(true)
+          
+        }}
+        duration={Snackbar.DURATION_SHORT}
+      >
+        No internet available
+      </Snackbar>
         <TouchableOpacity
         style={styles.floatingButton}
         onPress={toggleModal}
@@ -284,7 +318,7 @@ const styles = StyleSheet.create({
     },
     floatingButton: {
       position: 'absolute',
-      bottom: 20,
+      bottom: 90,
       right: 20,
       backgroundColor: '#FFBFBF',
       width: 60,
