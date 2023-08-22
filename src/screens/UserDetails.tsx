@@ -21,7 +21,7 @@ const UserProfile = ({route,navigation}) => {
   const handleEditToggle = (id) => {
     console.log("edit clicked");
     setEditing(!isEditing);
-    editUserDetails(id)
+    // editUserDetails(id)
   };
 
   async function editUserDetails(id){
@@ -36,12 +36,13 @@ const UserProfile = ({route,navigation}) => {
             "time": userData.time,
             "lastModified":moment().format('DD/MM/YYYY HH:mm:ss')
         }); 
-        console.log(response); 
+        console.log("ressss",response); 
+        setEditing(!isEditing);
         if(response.status == true){
             Alert.alert('Eddited Succesfully', '', [
                 {
                   text: 'OK',
-                  onPress: () => navigation.navigate('DashBoard'), 
+                  onPress: () => navigation.replace('DashBoard'), 
                 },
               ])
         }
@@ -121,15 +122,24 @@ const UserProfile = ({route,navigation}) => {
         </View>
       </View>
       <View style={styles.buttonGroup}>
-        <TouchableOpacity style={styles.editButton} onPress={() => {
-            handleEditToggle(id)
+        {isEditing ?
+         <TouchableOpacity style={styles.editButton} onPress={() => {
+          editUserDetails(id)
         }}>
-          {isEditing ? (
+         
               <Image style={styles.img}  source={CheckImg} />
-          ) : (
+        
+        </TouchableOpacity> :
+         <TouchableOpacity style={styles.editButton} onPress={() => {
+          handleEditToggle(id)
+          // editUserDetails(id)
+        }}>
+         
             <Image  style={styles.img} source={PenImg} />
-          )}
+          
         </TouchableOpacity>
+        }
+      
         <TouchableOpacity onPress={() => {
             deleteUser(id)
         }} style={styles.deleteButton}>
